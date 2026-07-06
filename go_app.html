@@ -2,10 +2,39 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<!-- แก้ URL ตรงนี้ที่เดียว QR ที่พิมพ์ไปแล้วจะพาไปปลายทางใหม่ทันที -->
-<meta http-equiv="refresh" content="0;url=https://web-ar-503735821614.asia-southeast1.run.app">
-<script>location.replace("https://web-ar-503735821614.asia-southeast1.run.app");</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ไฟล์นี้ห้ามแก้ปลายทาง! อยากเปลี่ยนปลายทาง ให้แก้ที่ dest.txt ที่เดียว มีผลทันที ไม่ติด cache -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Redirecting…</title>
+<script>
+  // ปลายทางสำรอง เผื่ออ่าน dest.txt ไม่ได้ (ออฟไลน์ ฯลฯ)
+  var FALLBACK = "https://web-ar-503735821614.asia-southeast1.run.app";
+
+  function go(url) {
+    var link = document.getElementById("go");
+    if (link) link.href = url;      // อัปเดตปุ่มสำรองให้ตรงปลายทางจริง
+    location.replace(url);
+  }
+
+  // ?t=timestamp = บังคับโหลดสดทุกครั้ง ไม่ให้เบราว์เซอร์/CDN จำของเก่า
+  fetch("dest.txt?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+    .then(function (t) {
+      var url = (t || "").trim();
+      go(/^https?:\/\//.test(url) ? url : FALLBACK);
+    })
+    .catch(function () { go(FALLBACK); });
+</script>
 </head>
-<body>กำลังพาไปที่ <a href="https://web-ar-503735821614.asia-southeast1.run.app"></a></body>
+<body style="font-family:sans-serif;text-align:center;padding:40px;color:#333">
+  <p>กำลังพาไปที่แอป AR…</p>
+  <p>
+    <a id="go" href="https://web-ar-503735821614.asia-southeast1.run.app"
+       style="display:inline-block;padding:14px 24px;background:#0a7;color:#fff;border-radius:8px;text-decoration:none">
+      แตะที่นี่ถ้าไม่เด้งอัตโนมัติ
+    </a>
+  </p>
+</body>
 </html>
